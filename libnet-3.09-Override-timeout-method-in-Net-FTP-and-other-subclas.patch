@@ -1,0 +1,91 @@
+From 72d07cb0d6a2e32a6a18a1794a592a8f6bf71665 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Wed, 27 Jul 2016 12:57:23 +0200
+Subject: [PATCH] Override timeout method in Net::FTP and other subclasses
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+After adding Net::Cmd::timeout() in commit
+91e593b615334fa76ef0454c4e601b98b6663841, the method masked
+IO::Socket:IP::timeout() in Net::FTP objects causing infitive block in
+select() on a FTP connection.
+
+CPAN RT#116345
+
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ lib/Net/FTP.pm  | 5 +++++
+ lib/Net/NNTP.pm | 6 ++++++
+ lib/Net/POP3.pm | 5 +++++
+ lib/Net/SMTP.pm | 5 +++++
+ 4 files changed, 21 insertions(+)
+
+diff --git a/lib/Net/FTP.pm b/lib/Net/FTP.pm
+index 905d830..42c33f5 100644
+--- a/lib/Net/FTP.pm
++++ b/lib/Net/FTP.pm
+@@ -1210,6 +1210,11 @@ sub _data_cmd {
+ ##
+ 
+ 
++sub timeout {
++  $IOCLASS->can('timeout')->(@_);
++}
++
++
+ sub debug_text { $_[2] =~ /^(pass|resp|acct)/i ? "$1 ....\n" : $_[2]; }
+ 
+ 
+diff --git a/lib/Net/NNTP.pm b/lib/Net/NNTP.pm
+index 764d580..f1b5c17 100644
+--- a/lib/Net/NNTP.pm
++++ b/lib/Net/NNTP.pm
+@@ -419,6 +419,12 @@ sub slave {
+   $nntp->_SLAVE;
+ }
+ 
++
++sub timeout {
++  $ISA[-1]->can('timeout')->(@_);
++}
++
++
+ ##
+ ## The following methods are not implemented by all servers
+ ##
+diff --git a/lib/Net/POP3.pm b/lib/Net/POP3.pm
+index bb18aaf..7f1cf5a 100644
+--- a/lib/Net/POP3.pm
++++ b/lib/Net/POP3.pm
+@@ -387,6 +387,11 @@ sub quit {
+ }
+ 
+ 
++sub timeout {
++  $ISA[-1]->can('timeout')->(@_);
++}
++
++
+ sub DESTROY {
+   my $me = shift;
+ 
+diff --git a/lib/Net/SMTP.pm b/lib/Net/SMTP.pm
+index 0dd966f..895c884 100644
+--- a/lib/Net/SMTP.pm
++++ b/lib/Net/SMTP.pm
+@@ -586,6 +586,11 @@ sub quit {
+ }
+ 
+ 
++sub timeout {
++  $ISA[-1]->can('timeout')->(@_);
++}
++
++
+ sub DESTROY {
+ 
+   # ignore
+-- 
+2.5.5
+

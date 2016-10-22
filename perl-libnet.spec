@@ -2,7 +2,7 @@
 
 Name:           %{?scl_prefix}perl-libnet
 Version:        3.09
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Perl clients for various network protocols
 License:        GPL+ or Artistic
 Group:          Development/Libraries
@@ -12,6 +12,8 @@ Source0:        http://www.cpan.org/authors/id/S/SH/SHAY/libnet-%{version}.tar.g
 Patch0:         libnet-3.09-Normalize-Changes-encoding.patch
 # Do not create Net/libnet.cfg, bug #1238689
 Patch1:         libnet-3.08-Do-not-create-Net-libnet.cfg.patch
+# Fix blocking in Net::FTP and other subclasses, bug #1360610, CPAN RT#116345
+Patch2:         libnet-3.09-Override-timeout-method-in-Net-FTP-and-other-subclas.patch
 BuildArch:      noarch
 BuildRequires:  findutils
 BuildRequires:  make
@@ -95,6 +97,7 @@ protocols used in the internet community.
 %setup -q -n libnet-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{?scl:scl enable %{scl} '}perl Makefile.PL INSTALLDIRS=vendor </dev/null && make %{?_smp_mflags}%{?scl:'}
@@ -114,6 +117,9 @@ find $RPM_BUILD_ROOT -type f -name .packlist -delete
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jul 27 2016 Petr Pisar <ppisar@redhat.com> - 3.09-3
+- Fix blocking in Net::FTP and other subclasses (bug #1360610)
+
 * Wed Jul 20 2016 Petr Pisar <ppisar@redhat.com> - 3.09-2
 - SCL
 
