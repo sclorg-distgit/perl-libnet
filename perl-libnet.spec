@@ -1,8 +1,8 @@
 %{?scl:%scl_package perl-libnet}
 
 Name:           %{?scl_prefix}perl-libnet
-Version:        3.10
-Release:        1%{?dist}
+Version:        3.09
+Release:        2%{?dist}
 Summary:        Perl clients for various network protocols
 License:        GPL+ or Artistic
 Group:          Development/Libraries
@@ -114,12 +114,6 @@ find $RPM_BUILD_ROOT -type f -name .packlist -delete
 %{_mandir}/man3/*
 
 %changelog
-* Mon Aug 01 2016 Jitka Plesnikova <jplesnik@redhat.com> - 3.10-1
-- 3.10 bump
-
-* Wed Jul 27 2016 Petr Pisar <ppisar@redhat.com> - 3.09-3
-- Fix blocking in Net::FTP and other subclasses (bug #1360610)
-
 * Wed Jul 20 2016 Petr Pisar <ppisar@redhat.com> - 3.09-2
 - SCL
 
